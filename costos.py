@@ -1,14 +1,16 @@
-import numpy as np
 import streamlit as st
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 
+# Opcional: configuración de la página
+st.set_page_config(page_title="Predicción de costos", layout="centered")
+
 st.write("# Predicción de tu costo")
 st.image("inversiones.jpg", caption="Predicción de lo que te va a costar una actividad.")
 
 # 1. Cargar datos
-datos = pd.read_csv("costos_pred.csv")  # utf-8 por defecto
+datos = pd.read_csv("costos_pred.csv", encoding="latin-1")
 
 # 2. Codificar variables categóricas (Texto -> número)
 # Creamos diccionarios de mapeo a partir de los valores del CSV
@@ -25,7 +27,7 @@ y = datos["Costo"]
 
 # 4. Separar en entrenamiento y prueba y entrenar el modelo
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.30, random_state=1613777
+    X, y, test_size=0.30, random_state=1613797
 )
 
 LR = LinearRegression()
@@ -33,22 +35,24 @@ LR.fit(X_train, y_train)
 
 st.header("Descripción de la actividad")
 
-# 5. Entradas del usuario
+# 5. Entradas del usuario (con rangos realistas)
 def user_input_features():
     Presupuesto = st.number_input(
         "Presupuesto de la actividad:",
-        min_value=0.0,
-        max_value=10000.0,
-        value=0.0,
-    )
-    Tiempo = st.number_input(
-        "Tiempo invertido en la actividad (minutos/horas):",
-        min_value=0.0,
-        max_value=10000.0,
-        value=0.0,
+        min_value=30.0,      # rango basado en tu CSV
+        max_value=6000.0,
+        value=100.0,
+        step=10.0,
     )
 
-    # Usamos las mismas categorías que vienen del CSV
+    Tiempo = st.number_input(
+        "Tiempo invertido en la actividad (minutos/horas):",
+        min_value=2.0,       # rango basado en tu CSV
+        max_value=180.0,
+        value=15.0,
+        step=1.0,
+    )
+
     Tipo_txt = st.selectbox(
         "Tipo de actividad:",
         options=list(tipo_mapping.keys()),
@@ -61,9 +65,10 @@ def user_input_features():
 
     Personas = st.number_input(
         "Número de personas involucradas en el gasto:",
-        min_value=1.0,
-        max_value=50.0,
+        min_value=1.0,       # nunca menos de 1 persona
+        max_value=7.0,
         value=1.0,
+        step=1.0,
     )
 
     user_input_data = {
@@ -80,7 +85,14 @@ def user_input_features():
 # 6. Obtener datos del usuario y predecir
 df = user_input_features()
 
-prediccion = LR.predict(df)[0]
+# Predicción del modelo
+prediccion_bruta = LR.predict(df)[0]
+
+# Corregir para que nunca sea negativa (no tiene sentido un costo negativo)
+prediccion = max(0.0, prediccion_bruta)
 
 st.subheader("Cálculo del costo")
 st.write(f"El costo de la actividad será de: **{prediccion:.2f}**")
+
+# (Opcional) Mostrar la predicción cruda del modelo para explicarlo en tu reporte
+st.caption(f"Predicción del modelo sin ajustar: {prediccion_bruta:.2f}")cion:.2f}**")
