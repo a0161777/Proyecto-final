@@ -92,7 +92,7 @@ prediccion_bruta = LR.predict(df)[0]
 prediccion = max(0.0, prediccion_bruta)
 
 st.subheader("Cálculo del costo")
-st.write(f"El costo de la actividad será de: **{prediccion:.2f}**")
+st.write(f"El costo de la actividad será de: **{prediccion:}**")
 
 # (Opcional) Mostrar la predicción cruda del modelo para explicarlo en tu reporte
-st.caption(f"Predicción del modelo sin ajustar: {prediccion_bruta:.2f}")cion:.2f}**")
+st.caption(f"Predicción del modelo sin ajustar: {prediccion_bruta:}")cion:}**")
