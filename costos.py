@@ -25,7 +25,7 @@ y = datos["Costo"]
 
 # 4. Separar en entrenamiento y prueba y entrenar el modelo
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.30, random_state=1613797
+    X, y, test_size=0.30, random_state=1613777
 )
 
 LR = LinearRegression()
